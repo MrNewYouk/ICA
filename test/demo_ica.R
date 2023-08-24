@@ -3,7 +3,7 @@ install.packages('fastICA')
 #---------------------------------------------------
 #Example 1: un-mixing two mixed independent uniforms
 #---------------------------------------------------
-S <- matrix(runif(10000), 5000, 2)
+S <- matrix(runif(10000), 5000, 2) # sourse
 A <- matrix(c(1, 1, -1, 3), 2, 2, byrow = TRUE)
 X <- S %*% A
 a <- fastICA::fastICA(X, 2, alg.typ = "parallel", fun = "logcosh", alpha = 1,
@@ -16,7 +16,7 @@ plot(a$S, main = "ICA components")
 #--------------------------------------------
 #Example 2: un-mixing two independent signals
 #--------------------------------------------
-S <- cbind(sin((1:1000)/20), rep((((1:200)-100)/100), 5))
+S <- cbind(sin((1:1000)/20), rep((((1:200)-100)/100), 5)) 
 A <- matrix(c(0.291, 0.6557, -0.5439, 0.5572), 2, 2)
 X <- S %*% A
 a <- fastICA::fastICA(X, 2, alg.typ = "parallel", fun = "logcosh", alpha = 1,
@@ -47,3 +47,11 @@ if(require(MASS)){
   plot(a$X %*% a$K, main = "PCA components")
   plot(a$S, main = "ICA components")
 }
+
+a$X
+a$K
+a$W^2
+a$A
+a$S
+
+
