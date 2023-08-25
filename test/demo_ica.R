@@ -73,36 +73,6 @@ a$S
 install.packages("PEIP")
 library(eegkit) # EEGデータの処理に便利なパッケージ
 library(fastICA) # ICAの実行に必要なパッケージ
-library(PEIP)
-
-# データの読み込み
-# ここでは、OpenBCI Communityで紹介されているPublicly Available EEG Datasetsの中から、
-# Left/Right Hand MI: Includes 52 subjects (38 validated subjects with discriminative features), results of physiological and psychological questionnares, EMG Datasets, location of 3D EEG electrodes, and EEGs for non-task related states
-# というデータセット¹を使用します。
-# データセットには、S01〜S52までの被験者ごとに、EEGデータ（A01T.mat〜A03T.mat）、EMGデータ（B01T.mat〜B03T.mat）、アンケート結果（questionnaire.mat）、電極位置（electrodes.mat）が含まれています。
-# ここでは、被験者S01のEEGデータ（A01T.mat）を読み込んでみます。
-data <- loadmat("A01T.mat") # データの読み込み
-eeg <- data$X # EEGデータの抽出
-eeg <- eeg[,,1] # 最初の試行のみ使用
-eeg <- t(eeg) # 行列の転置（fastICAの入力として適切な形にするため）
-
-# ICAの実行
-ica <- fastICA(eeg, n.comp = 22) # 22個の独立成分を求める
-S <- ica$S # 独立成分信号
-A <- ica$A # 混合行列
-
-# 結果の可視化
-par(mfrow = c(2,1)) # 2行1列にプロットを並べる
-plot(eeg[1,], type = "l", main = "Original EEG signal (channel 1)") # 元のEEG信号（チャンネル1）をプロット
-plot(S[,1], type = "l", main = "Independent component signal (component 1)") # 独立成分信号（成分1）をプロット
-
-
-
-
-
-
-
-
 
 ##########   EXAMPLE   ##########
 # https://rdrr.io/cran/eegkit/man/eegica.html
@@ -115,10 +85,16 @@ eegdata[,1]
 # unique(eegdata$group)
 # [1] a c
 # Levels: a c
+eegdata[2,]
+
+# URLのデモ
 idx <- which(eegdata$group=="c")
 eegdata <- eegdata[idx,]
 # get average data (across subjects)
 eegmean <- tapply(eegdata$voltage,list(eegdata$channel,eegdata$time),mean)
+dim(eegmean)
+# > dim(eegmean)
+# [1]  64 256 feature sample
 
 # remove ears and nose
 acnames <- rownames(eegmean)
@@ -130,6 +106,9 @@ data(eegcoord)
 cidx <- match(rownames(eegmean),rownames(eegcoord))
 
 # temporal ICA with 4 components
+eegica
+# function (X, nc, center = TRUE, maxit = 100, tol = 1e-06, Rmat = diag(nc), 
+#           type = c("time", "space"), method = c("imax", "fast", "jade"),
 icatime <- eegica(eegmean,4)
 icatime$vafs
 # quartz()
