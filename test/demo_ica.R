@@ -68,7 +68,7 @@ a$A
 a$S
 
 
-
+##### EEG Dataset
 # パッケージの読み込み
 install.packages("PEIP")
 library(eegkit) # EEGデータの処理に便利なパッケージ
@@ -94,7 +94,7 @@ eegdata <- eegdata[idx,]
 eegmean <- tapply(eegdata$voltage,list(eegdata$channel,eegdata$time),mean)
 dim(eegmean)
 # > dim(eegmean)
-# [1]  64 256 feature sample
+# [1]  64 256 feature sample size
 
 # remove ears and nose
 acnames <- rownames(eegmean)
