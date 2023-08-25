@@ -98,6 +98,11 @@ dim(eegmean)
 
 # remove ears and nose
 acnames <- rownames(eegmean)
+# rownames(eegmean)
+# [1] "AF1" "AF2" "AF7" "AF8" "AFZ" "C1"  "C2"  "C3"  "C4"  "C5"  "C6"  "CP1" "CP2" "CP3" "CP4" "CP5" "CP6" "CPZ" "CZ"  "F1"  "F2" 
+# [22] "F3"  "F4"  "F5"  "F6"  "F7"  "F8"  "FC1" "FC2" "FC3" "FC4" "FC5" "FC6" "FCZ" "FP1" "FP2" "FPZ" "FT7" "FT8" "FZ"  "nd"  "O1" 
+# [43] "O2"  "OZ"  "P1"  "P2"  "P3"  "P4"  "P5"  "P6"  "P7"  "P8"  "PO1" "PO2" "PO7" "PO8" "POZ" "PZ"  "T7"  "T8"  "TP7" "TP8" "X"  
+# [64] "Y" 
 idx <- c(which(acnames=="X"),which(acnames=="Y"),which(acnames=="nd"))
 eegmean <- eegmean[-idx,]
 
@@ -111,14 +116,27 @@ eegica
 #           type = c("time", "space"), method = c("imax", "fast", "jade"),
 icatime <- eegica(eegmean,4)
 icatime$vafs
+# icatime$vafs Variance-accounted-for by each component.
+# [1] 0.58986476 0.19985796 0.11850832 0.04495305
+# EEGデータにおけるVariance-accounted-for by each componentとは、
+# EEGデータの分散を各成分（独立成分分析（ICA）で抽出された信号源）がどれだけ説明しているかを示す指標。
+# EEGデータから各成分を引いたときの分散と、元のEEGデータの分散との比率で計算する。
+# 例えば、ある成分がEEGデータの全てを説明している場合、EEGデータからその成分を引くと分散は0になり、
+# Variance-accounted-for by each componentは100％になる。逆に、ある成分がEEGデータに全く影響を与えていない場合、
+# EEGデータからその成分を引いても分散は変わらず、Variance-accounted-for by each componentは0%になる。
+# この指標は、各成分がEEGデータにどれだけ寄与しているかを評価するために用いられます。
 # quartz()
 par(mfrow=c(4,2))
 tseq <- (0:255)*1000/255
 for(j in 1:4){
   par(mar=c(5.1,4.6,4.1,2.1))
-  sptitle <- bquote("VAF:  "*.(round(icatime$vafs[j],4)))
+  # グラフの周りの余白を指定するパラメータです。`mar` は、下、左、上、右の順にグラフと図枠の間の空白を表す数値ベクトルです¹。
+  sptitle <- bquote("VAF:  "*.(round(icatime$vafs[j],4))) 
+  # 変数 `sptitle` に、独立成分分析（ICA）で得られた成分の分散説明率（VAF）を表す文字列を代入するコードです。`bquote` は、式中に変数の値を埋め込む関数です²。`round(icatime$vafs[j],4)` は、`icatime$vafs[j]` の値を小数点以下4桁に丸める関数です³。
   eegtime(tseq,icatime$S[,j],main=bquote("Component  "*.(j)),cex.main=1.5)
+  # EEGの時間経過をプロットする関数です⁴。引数として、時間軸のベクトル `tseq` 、ICAで得られた成分の電圧ベクトル `icatime$S[,j]` 、プロットのタイトルとして成分番号を表す文字列 `bquote("Component  "*.(j))` 、タイトルの文字サイズ `cex.main=1.5` を与えています。
   eegspace(eegcoord[cidx,4:5],icatime$M[,j],main=sptitle)
+  # EEGの空間分布をプロットする関数です⁵。引数として、電極座標の行列 `eegcoord[cidx,4:5]` 、ICAで得られた成分の空間マップベクトル `icatime$M[,j]` 、プロットのタイトルとしてVAFを表す文字列 `sptitle` を与えています。
 }
 
 # spatial ICA with 4 components
